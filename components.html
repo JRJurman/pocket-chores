@@ -1,13 +1,19 @@
+<style>
+	:root {
+		--segments: 4;
+	}
+</style>
 <template is="component-definition">
 	<day-view start="5" length="21">
 		<style>
 			:host {
 				--length: ${'length'};
+				--half-length: calc(${'length'} * var(--segments));
 			}
 
 			marker-wrapper {
 				display: grid;
-				grid-template-rows: repeat(var(--length), 1fr);
+				grid-template-rows: repeat(var(--half-length), 1fr);
 				grid-template-columns: repeat(3, 1fr);
 			}
 		</style>
@@ -19,18 +25,20 @@
 		</script>
 	</day-view>
 
-	<time-marker start="">
+	<time-marker index="">
 		<style>
 			:host {
-				--start: ${'start'};
+				--index: ${'index'};
 			}
 			:host {
-				display: block;
-				border-bottom: solid 1px white;
-				padding-top: 2em;
+				display: flex;
+				align-items: start;
+
+				border-top: solid 1px white;
 				padding-left: 0.4em;
 
-				grid-row: var(--start);
+				grid-row-start: calc((var(--index) * var(--segments)) + 1);
+				grid-row-end: span var(--segments);
 				grid-column-start: 1;
 				grid-column-end: span 3;
 			}
@@ -51,14 +59,16 @@
 		const markerWrapper = dayView.shadowRoot.querySelector('marker-wrapper');
 		timeMarkerTimes.forEach((time, index) => {
 			const meridiem = time < 11 || time == 23 ? 'AM' : 'PM';
-			const timeMarker = html`<time-marker start="${index}">${(time % 12) + 1} ${meridiem}</time-marker>`;
+			const timeMarker = html`<time-marker time=${time + 1} index="${index}"
+				>${(time % 12) + 1} ${meridiem}</time-marker
+			>`;
 			markerWrapper.appendChild(timeMarker);
 		});
 	}
 </script>
 
 <template is="component-definition">
-	<schedule-task type="sync" start="1" length="1">
+	<schedule-task type="left" start="1" length="1">
 		<style>
 			:host {
 				--start: ${'start'};
@@ -68,18 +78,18 @@
 				grid-row-start: var(--start);
 				grid-row-end: span var(--length);
 			}
-			:host([type="sync"]) {
+			:host([type="left"]) {
 				grid-column-start: 2;
 			}
-			:host([type="async"]) {
+			:host([type="right"]) {
 				grid-column-start: 3;
 			}
 
-			:host([type="sync"]) div {
+			:host([type="left"]) div {
 				background: blue;
 			}
 
-			:host([type="async"]) div {
+			:host([type="right"]) div {
 				background: purple;
 			}
 
