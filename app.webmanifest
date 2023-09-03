@@ -1,0 +1,14 @@
+{
+	"name": "Pocket Chores",
+	"scope": "https://jrjurman.com/pocket-chores/",
+	"description": "PWA for managing sync and async chores",
+	"display": "standalone",
+	"icons": [
+		{
+			"src": "https://jrjurman.com/pocket-chores/favicon.png",
+			"sizes": "any",
+			"type": "image/png"
+		}
+	],
+	"start_url": "/pocket-chores"
+}

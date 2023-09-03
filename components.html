@@ -1,0 +1,96 @@
+<template is="component-definition">
+	<day-view start="5" length="21">
+		<style>
+			:host {
+				--length: ${'length'};
+			}
+
+			marker-wrapper {
+				display: grid;
+				grid-template-rows: repeat(var(--length), 1fr);
+				grid-template-columns: repeat(3, 1fr);
+			}
+		</style>
+		<marker-wrapper>
+			<slot></slot>
+		</marker-wrapper>
+		<script>
+			buildTimeMarkers(this);
+		</script>
+	</day-view>
+
+	<time-marker start="">
+		<style>
+			:host {
+				--start: ${'start'};
+			}
+			:host {
+				display: block;
+				border-bottom: solid 1px white;
+				padding-top: 2em;
+				padding-left: 0.4em;
+
+				grid-row: var(--start);
+				grid-column-start: 1;
+				grid-column-end: span 3;
+			}
+		</style>
+		<span>
+			<slot></slot>
+		</span>
+	</time-marker>
+</template>
+
+<script>
+	function buildTimeMarkers(dayView) {
+		console.log('buildTimeMarkers');
+		const start = parseInt(dayView.getAttribute('start'));
+		const length = parseInt(dayView.getAttribute('length'));
+		const timeMarkerTimes = [...new Array(length)].map((e, index) => (index + start) % 24);
+
+		const markerWrapper = dayView.shadowRoot.querySelector('marker-wrapper');
+		timeMarkerTimes.forEach((time, index) => {
+			const meridiem = time < 11 || time == 23 ? 'AM' : 'PM';
+			const timeMarker = html`<time-marker start="${index}">${(time % 12) + 1} ${meridiem}</time-marker>`;
+			markerWrapper.appendChild(timeMarker);
+		});
+	}
+</script>
+
+<template is="component-definition">
+	<schedule-task type="sync" start="1" length="1">
+		<style>
+			:host {
+				--start: ${'start'};
+				--length: ${'length'};
+			}
+			:host {
+				grid-row-start: var(--start);
+				grid-row-end: span var(--length);
+			}
+			:host([type="sync"]) {
+				grid-column-start: 2;
+			}
+			:host([type="async"]) {
+				grid-column-start: 3;
+			}
+
+			:host([type="sync"]) div {
+				background: blue;
+			}
+
+			:host([type="async"]) div {
+				background: purple;
+			}
+
+			div {
+				width: calc(100% - 2em);
+				height: calc(100% - 2em);
+				padding: 1em;
+			}
+		</style>
+		<div>
+			<slot></slot>
+		</div>
+	</schedule-task>
+</template>
